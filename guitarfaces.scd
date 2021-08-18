@@ -7,16 +7,33 @@ ServerOptions.outDevices;
 
 // 出力先変更#
 (
-Server.default.options.outDevice_("MacBook Proのス");
+Server.default.options.outDevice_("iRig HD 2");
 Server.default.reboot;
 SuperDirt.start;
 )
 
-~dirt.loadSoundFiles("/Users/keitamiyano/Code/CodeMusic/guitarfaces/samples/*");
-
 (
-SynthDef(
-	"SinOscSynthBend", {
+	~dirt.loadSoundFiles("/Users/keitamiyano/Code/CodeMusic/guitarfaces/samples/*");
+
+	~dirt.addModule('SchroederReverb', { |dirtEvent|
+		dirtEvent.sendSynth('SchroederReverb' ++ ~dirt.numChannels,
+			[
+				reverb: ~reverb,
+				out: ~out
+			]
+		)
+	}, { ~reverb.notNil });
+	SynthDef("SchroederReverb" ++ ~dirt.numChannels, { |out, reverb|
+		var signal, chain, in, z, y;
+		signal = In.ar(out, ~dirt.numChannels);
+		z = DelayN.ar(signal, 0.048);
+		y = Mix.ar(Array.fill(7,{ CombL.ar(z, 0.1, 1, 15) }));
+		32.do({ y = AllpassN.ar(y, 0.050, [0.050.rand, 0.050.rand], 1) });
+		signal = signal + (0.2*y*reverb);
+		ReplaceOut.ar(out, signal)
+	}, [\ir]).add;
+
+	SynthDef("SinOscSynthBend", {
 		arg out, sustain=1, decay=0, pan=0, freq=110, accelerate=0, slide=0, sustainpedal=0.5;
 		var fglide, detune, sound, sig1, sig2, env, bendSustain;
 		bendSustain = sustainpedal;
@@ -29,12 +46,9 @@ SynthDef(
 		env = EnvGen.ar(Env.linen(0.01, 0, 0.6, 1, -3), timeScale:sustain, doneAction:2);
 		//env = EnvGen.ar(Env.pairs([[0,0],[0.03,1],[0.2,1-decay],[0.95,1-decay],[1,0]], -1), timeScale:sustain, doneAction:2);
 		OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
-}).add
-);
+	}).add;
 
-(
-SynthDef(
-	"superhammondBend", {
+	SynthDef("superhammondBend", {
 		arg out, sustain=1, decay=0, pan, freq, vibrato=0.5, vrate=7, voice=0, perc=0, percf=2, accelerate=0, slide=0, sustainpedal=0.5;
 		var freqs, amps, sound, click, env, ampscale, attrel, fglide, bendSustain;
 		bendSustain = sustainpedal;
@@ -69,33 +83,9 @@ SynthDef(
 		sound = sound + BAllPass.ar(sound, 1000*LFTri.kr(vrate,0,vibrato/2,1));
 		// Out.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
 		Out.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
-}).add
-);
+	}).add;
 
-(
-	~dirt.addModule('reverb', { |dirtEvent|
-		dirtEvent.sendSynth('reverb' ++ ~dirt.numChannels,
-			[
-				reverb: ~reverb,
-				out: ~out
-			]
-		)
-	}, { ~reverb.notNil });
-
-	SynthDef("reverb" ++ ~dirt.numChannels, { |out, reverb|
-		var signal, chain, in, z, y;
-		signal = In.ar(out, ~dirt.numChannels);
-		z = DelayN.ar(signal, 0.048);
-		y = Mix.ar(Array.fill(7,{ CombL.ar(z, 0.1, 1, 15) }));
-		32.do({ y = AllpassN.ar(y, 0.050, [0.050.rand, 0.050.rand], 1) });
-		signal = signal + (0.2*y*reverb);
-		ReplaceOut.ar(out, signal)
-	}, [\ir]).add;
-)
-
-(
-SynthDef(
-	"MyMoog", {
+	SynthDef("MyMoog", {
 		arg out, freq = 110, sustain = 1, pan = 0.5, pitch1=4.0, accelerate=0, slide=0, sustainpedal=0.5;
 		var detune, sig1, sig2, env, sound, fglide, bendSustain;
 		bendSustain = sustainpedal;
@@ -113,6 +103,5 @@ SynthDef(
 		sound = (sig1 + sig2) * 1;
 		env = EnvGen.ar(Env.linen(0.01, 0, 0.6, 1, -3), timeScale:sustain, doneAction:2);
 		OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
-	}
-).add
+	}).add;
 )
