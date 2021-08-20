@@ -19,7 +19,7 @@ do
     # lpf 1000
     # gain 0.6 # room 0.4
   d2
-    $ (|* gain 0.73)
+    $ (|* gain 0.72)
     $ someCyclesBy 0.2 (|+ n 12)
     $ stack[
     slow (3/2) $ s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
@@ -42,9 +42,9 @@ do
     # gain (wchoose [(0, 0.92), (1, 0.08)])
     # room 0.1
   d4
-    $ (|* gain 1.0)
+    $ (|* gain 1.2)
     $ fast 2
-    $ someCyclesBy 0.4 (ply "6 16")
+    $ someCyclesBy 0.5 (ply "6 16")
     $ s "harmonics? harmonics?"
     # gain (slow 5 $ rand*rand)
     # pan rand
@@ -58,7 +58,7 @@ do
         s "guitar" # speed "1" # pan 0.25,
         s "guitar" # speed "-1" # pan 0.75
       ]
-      # gain 1.35
+      # gain 1.31
     ))
     ]
   d15
