@@ -19,16 +19,19 @@ SuperDirt.start;
 		dirtEvent.sendSynth('SchroederReverb' ++ ~dirt.numChannels,
 			[
 				reverb: ~reverb,
+				ice: ~ice,
 				out: ~out
 			]
 		)
-	}, { ~reverb.notNil });
-	SynthDef("SchroederReverb" ++ ~dirt.numChannels, { |out, reverb|
-		var signal, chain, in, z, y;
+	}, { ~reverb.notNil or: { ~ice.notNil }});
+	SynthDef("SchroederReverb" ++ ~dirt.numChannels, { |out, reverb, ice|
+		var signal, chain, in, z, y, oct;
 		signal = In.ar(out, ~dirt.numChannels);
 		z = DelayN.ar(signal, 0.048);
 		y = Mix.ar(Array.fill(7,{ CombL.ar(z, 0.1, 1, 15) }));
 		32.do({ y = AllpassN.ar(y, 0.050, [0.050.rand, 0.050.rand], 1) });
+		oct = 1.0 * LeakDC.ar( abs(y) );
+		y = SelectX.ar(ice, [y, ice * oct, DC.ar(0)]);
 		signal = signal + (0.2*y*reverb);
 		ReplaceOut.ar(out, signal)
 	}, [\ir]).add;
