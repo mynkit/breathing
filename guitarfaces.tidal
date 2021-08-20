@@ -4,10 +4,10 @@ resetCyclesTo n = T.changeTempo (sTempoMV tidal) (\t tempo -> tempo {T.atTime = 
 
 setcps (90/60/4)
 
-all $ (|* gain 1.1)
+all $ (|* gain 1.2)
 
 do
-  -- resetCyclesTo (-0.05)
+  resetCyclesTo (-0.05)
   let
     reverb = pF "reverb"
     ice = pF "ice"
@@ -19,7 +19,7 @@ do
     # lpf 1000
     # gain 0.6 # room 0.4
   d2
-    $ (|* gain 0.8)
+    $ (|* gain 0.73)
     $ someCyclesBy 0.2 (|+ n 12)
     $ stack[
     slow (3/2) $ s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
@@ -28,28 +28,39 @@ do
     ]
     # sustain 3
     # reverb 0.2
-    # ice 0.3
+    # ice 0.1
     # sustainpedal 0.25
     # slide 0.5
   d3
     $ (|* gain 1.1)
     $ (|> cut 1)
-    $ ply (wchoose [(1, 0.6), (2, 0.1), (4, 0.25), (8, 0.025), (12, 0.025)])
+    $ ply (wchoose [(1, 0.3), (2, 0.2), (4, 0.35), (8, 0.075), (12, 0.075)])
     $ s "AM7*12"
-    # n rand
+    # n (irand 3)
     # hpf 60 # hpq 0.9
     # pan (slow 1.5 $ rand)
-    # gain (wchoose [(0, 0.9), (1, 0.1)])
-    -- # gain (wchoose [(0, 0.6), (1, 0.4)])
+    # gain (wchoose [(0, 0.92), (1, 0.08)])
     # room 0.1
   d4
     $ (|* gain 1.0)
-    $ someCyclesBy 0.2 (ply "4 16")
-    $ s "harmonics*2"
-    # gain (slow 3 $ rand*rand)
+    $ fast 2
+    $ someCyclesBy 0.4 (ply "6 16")
+    $ s "harmonics? harmonics?"
+    # gain (slow 5 $ rand*rand)
     # pan rand
-    # speed (choose [-1, 0.5, -2, -0.5, 1.5, 1/3])
+    # speed (choose [-1, 0.5, -2, -0.5, 1.5, 0.75])
     # cut 1
+  d5 $ s "bd*4" # gain 0.8
+  d10
+    $ seqP [
+    (4, 5, (
+      stack [
+        s "guitar" # speed "1" # pan 0.25,
+        s "guitar" # speed "-1" # pan 0.75
+      ]
+      # gain 1.35
+    ))
+    ]
   d15
     $ fast (range 5 8 rand)
     $ s "SinOscSynthBend*8"
