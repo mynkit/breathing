@@ -20,11 +20,14 @@ do
     # gain 0.6 # room 0.4
   d2
     $ (|* gain 0.72)
-    $ someCyclesBy 0.2 (|+ n 12)
     $ stack[
-    slow (3/2) $ s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
+    slow (3/2) $
+    every' 6 4 (|+ n 12) $
+    s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
     ,
-    ((1/16) <~) $ s "SinOscSynthBend" # n "<e4,a5,b5>" # gain 0.9 # pan 0.8
+    ((1/16) <~) $
+    every' 4 3 (|+ n 12) $
+    s "SinOscSynthBend" # n "<e4,a5,b5>" # gain 0.9 # pan 0.8
     ]
     # sustain 3
     # reverb 0.2
@@ -50,8 +53,24 @@ do
     # pan rand
     # speed (choose [-1, 0.5, -2, -0.5, 1.5, 0.75])
     # cut 1
-  d5 $ s "bd*4" # gain 0.8
-  d10
+  d5
+    $ (|* gain 1.0)
+    $ (|> pan (fast 3 $ rand))
+    $ ((|> hpf 60).(|> hpq 1.0).(|> shape 0.1).(|> room 0.1))
+    $ every' 4 1 (const $ s "~ ~ gtr_single ~ " # gain 1 # n 1)
+    $ every' 4 3 (const $ s "~ gtr_single ~ ~" # gain 1 # n 0)
+    $ s "~"
+  d7 -- bass
+    $ (|* gain 1.0)
+    $ ((|> hpf 60).(|> hpq 0.9))
+    $ every' 4 0 (|> gain 0)
+    $ every' 4 3 (|> gain 0)
+    $ const (stack[
+        (0.005 ~>) $ s "~ gtr_slap ~ ~" # n 1 # gain 0.9,
+        s "~ superhammondBend ~ ~" # n "e2" # sustain 0.3
+      ])
+    $ s ""
+  d10 -- guitar
     $ seqP [
     (4, 5, (
       stack [
@@ -61,10 +80,10 @@ do
       # gain 1.31
     ))
     ]
-  d15
+  d15 -- background
     $ fast (range 5 8 rand)
     $ s "SinOscSynthBend*8"
     # n (choose [2,3,4,5])
     # sustain (range 0.0004 0.0006 rand)
     # pan (fast 1.5 rand)
-    # gain 1.1
+    # gain 1.0
