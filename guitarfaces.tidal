@@ -7,11 +7,12 @@ setcps (90/60/4)
 all $ (|* gain 1.2)
 
 do
-  resetCyclesTo (-0.05)
+  resetCyclesTo (1-0.05)
   let
     reverb = pF "reverb"
     ice = pF "ice"
   d1
+    $ when (<11) (|> gain 0)
     -- $ (|+ n "-2")
     $ s "superhammondBend*4" # n "<a4,b4>" # pan (slow 5 $ sine)
     # sustain 1.2
@@ -20,21 +21,60 @@ do
     # gain 0.6 # room 0.4
   d2
     $ (|* gain 0.72)
-    $ stack[
-    slow (3/2) $
-    every' 6 4 (|+ n 12) $
-    s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
-    ,
-    ((1/16) <~) $
-    every' 4 3 (|+ n 12) $
-    s "SinOscSynthBend" # n "<e4,a5,b5>" # gain 0.9 # pan 0.8
+    $ seqP [
+    (0, 4, (
+      when (<2) (|> gain 0) $
+      stack[
+      slow (3/2) $
+      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
+      ]
+      # ice 0.1
+    )),
+    (2, 6, (
+      when (<2) (|> gain 0) $
+      stack[
+      slow (3/2) $
+      s "SinOscSynthBend" # n "<a5,d6,e6>" # gain 1 # pan 0.4
+      ,
+      ((1/16) <~) $
+      s "SinOscSynthBend/2" # n "<e4,a4,b4>" # gain 0.9 # pan 0.8
+      ]
+      # ice 0.1
+    )),
+    (4, 8, (
+      when (<2) (|> gain 0) $
+      stack[
+      slow (3/2) $
+      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.3 # ice 0.1
+      ,
+      ((1/16) <~) $
+      every' 4 3 ((|+ n 12).(|> ice 0.6)) $
+      s "SinOscSynthBend" # n "<e4,e5,a5,b5>" # gain 0.9 # pan 0.8
+      ]
+    )),
+    (8, 10, (
+      s "SinOscSynthBend/3" # n "<e4,a4,b4>" # gain 0.9 # pan 0.2 # ice 0.2
+    )),
+    (8, 90, (
+      when (<2) (|> gain 0) $
+      stack[
+      slow (3/2) $
+      every' 6 4 (|+ n 12) $
+      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.2
+      ,
+      ((1/16) <~) $
+      every' 4 3 (|+ n 12) $
+      s "SinOscSynthBend" # n "<e4,e5,a5,b5>" # gain 0.9 # pan 0.8
+      ]
+      # ice 0.1
+    ))
     ]
-    # sustain 3
     # reverb 0.2
-    # ice 0.1
+    # sustain 5
     # sustainpedal 0.25
     # slide 0.5
   d3
+    $ when (<7) (|> gain 0)
     $ (|* gain 1.1)
     $ (|> cut 1)
     $ ply (wchoose [(1, 0.3), (2, 0.2), (4, 0.35), (8, 0.075), (12, 0.075)])
@@ -46,33 +86,50 @@ do
     # room 0.1
   d4
     $ (|* gain 1.2)
-    $ fast 2
-    $ someCyclesBy 0.5 (ply "6 16")
-    $ s "harmonics? harmonics?"
-    # gain (slow 5 $ rand*rand)
-    # pan rand
-    # speed (choose [-1, 0.5, -2, -0.5, 1.5, 0.75])
-    # cut 1
+    $ seqP [
+    (10, 11, (
+      s "~ ~ ~ harmonics ~"
+      # speed "-1.5"
+      # pan 0.8 # gain 0.85
+    )),
+    (0, 90, (
+      when (<11) (|> gain 0)
+      $ fast 2
+      $ someCyclesBy 0.5 (ply "6 16")
+      $ s "harmonics? harmonics?"
+      # gain (slow 5 $ rand*rand)
+      # pan rand
+      # speed (choose [-1, 0.5, -2, -0.5, 1.5, 0.75])
+      # cut 1
+    ))
+    ]
   d5
-    $ (|* gain 1.0)
+    $ when (<14) (|> gain 0)
+    $ (|* gain 0.83)
     $ (|> pan (fast 3 $ rand))
-    $ ((|> hpf 60).(|> hpq 1.0).(|> shape 0.1).(|> room 0.1))
-    $ every' 4 1 (const $ s "~ ~ gtr_single ~ " # gain 1 # n 1)
-    $ every' 4 3 (const $ s "~ gtr_single ~ ~" # gain 1 # n 0)
+    $ ((|> hpf 60).(|> hpq 1.0).(|> shape 0.5).(|> room 0.1))
+    $ (|> lpf (range 500 3000 rand))
+    $ every' 4 2 (const $ s "~ ~ gtr_single ~ " # gain 1 # n 0)
+    $ every' 4 3 (const $ s "~ gtr_single ~ ~" # gain 1 # n (choose [0,1]))
     $ s "~"
   d7 -- bass
+    $ when (<12) (|> gain 0)
     $ (|* gain 1.0)
     $ ((|> hpf 60).(|> hpq 0.9))
     $ every' 4 0 (|> gain 0)
-    $ every' 4 3 (|> gain 0)
-    $ const (stack[
+    $ every' 4 1 (|> gain 0)
+    $ every' 4 2 (const (stack[
         (0.005 ~>) $ s "~ gtr_slap ~ ~" # n 1 # gain 0.9,
         s "~ superhammondBend ~ ~" # n "e2" # sustain 0.3
-      ])
+      ]))
+    $ every' 4 3 (const (stack[
+        (0.005 ~>) $ s "[~ gtr_slap] ~ ~ ~" # n 1 # gain 0.9,
+        s "[~ superhammondBend] ~ ~ ~" # n "e2" # sustain 0.3
+      ]))
     $ s ""
   d10 -- guitar
     $ seqP [
-    (4, 5, (
+    (18, 19, (
       stack [
         s "guitar" # speed "1" # pan 0.25,
         s "guitar" # speed "-1" # pan 0.75
@@ -81,9 +138,13 @@ do
     ))
     ]
   d15 -- background
-    $ fast (range 5 8 rand)
-    $ s "SinOscSynthBend*8"
-    # n (choose [2,3,4,5])
-    # sustain (range 0.0004 0.0006 rand)
-    # pan (fast 1.5 rand)
-    # gain 1.0
+    $ seqP [
+    (1, 90, (
+      fast (range 5 8 rand)
+      $ s "SinOscSynthBend*8"
+      # n (choose [2,3,4,5])
+      # sustain (range 0.0004 0.0006 rand)
+      # pan (fast 1.5 rand)
+      # gain 1.0
+    ))
+    ]
