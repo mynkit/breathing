@@ -13,7 +13,7 @@ do
     ice = pF "ice"
     elem' xs x = elem x xs
   d1
-    $ when (<11) (|> gain 0)
+    $ when (<14) (|> gain 0)
     -- $ (|+ n "-2")
     $ s "superhammondBend*4" # n "<a4,b4>" # pan (slow 5 $ sine)
     # sustain 1.2
@@ -23,17 +23,9 @@ do
   d2
     $ (|* gain 0.7)
     $ seqP [
-    (0, 4, (
-      when (<2) (const (s "")) $
-      when (==2) (const(
-        s "SinOscSynthBend" # n "<e4,a4,b4>"
-        # gain 1 # pan 0.7 # reverb 0.2
-        # sustain 5 # sustainpedal 0.25 # slide 0.5
-      )) $
-      stack[
-      slow (3/2) $
-      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
-      ]
+    (2, 3, (
+      s "SinOscSynthBend ~ ~ [~ [~ SinOscSynthBend]]"
+      # n "<e4,a4,b4> <a5,d5,e5>" # gain 1 # pan "0.7 0.4"
       # ice 0.1
     )),
     (2, 6, (
@@ -65,11 +57,11 @@ do
       when (<2) (|> gain 0) $
       stack[
       slow (3/2) $
-      every' 6 4 (|+ n 12) $
+      every' 6 4 ((|+ n 12).(|* gain 0.9)) $
       s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.2
       ,
       ((1/16) <~) $
-      every' 4 3 (|+ n 12) $
+      every' 4 3 ((|+ n 12).(|* gain 0.95)) $
       s "SinOscSynthBend" # n "<e4,e5,a5,b5>" # gain 0.9 # pan 0.8
       ]
       # ice 0.1
