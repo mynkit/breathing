@@ -16,7 +16,7 @@ do
     $ when (<14) (|> gain 0)
     -- $ (|+ n "-2")
     $ s "superhammondBend*4" # n "<a4,b4>" # pan (slow 5 $ sine)
-    # sustain 1.2
+    # sustain 0.95
     # voice 1
     # lpf 1000
     # gain 0.6 # room 0.4
