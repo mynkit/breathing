@@ -11,6 +11,7 @@ do
   let
     reverb = pF "reverb"
     ice = pF "ice"
+    elem' xs x = elem x xs
   d1
     $ when (<11) (|> gain 0)
     -- $ (|+ n "-2")
@@ -20,10 +21,15 @@ do
     # lpf 1000
     # gain 0.6 # room 0.4
   d2
-    $ (|* gain 0.72)
+    $ (|* gain 0.7)
     $ seqP [
     (0, 4, (
-      when (<2) (|> gain 0) $
+      when (<2) (const (s "")) $
+      when (==2) (const(
+        s "SinOscSynthBend" # n "<e4,a4,b4>"
+        # gain 1 # pan 0.7 # reverb 0.2
+        # sustain 5 # sustainpedal 0.25 # slide 0.5
+      )) $
       stack[
       slow (3/2) $
       s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.4
@@ -77,6 +83,7 @@ do
     $ when (<7) (|> gain 0)
     $ (|* gain 1.1)
     $ (|> cut 1)
+    $ when (elem' [9]) ( (ply "4").(# gain (wchoose [(0, 0.7), (1, 0.3)])) )
     $ ply (wchoose [(1, 0.3), (2, 0.2), (4, 0.35), (8, 0.075), (12, 0.075)])
     $ s "AM7*12"
     # n (irand 3)
@@ -90,7 +97,7 @@ do
     (10, 11, (
       s "~ ~ ~ harmonics ~"
       # speed "-1.5"
-      # pan 0.8 # gain 0.85
+      # pan 0.4 # gain 0.85
     )),
     (0, 90, (
       when (<11) (|> gain 0)
@@ -105,10 +112,10 @@ do
     ]
   d5
     $ when (<14) (|> gain 0)
-    $ (|* gain 0.83)
+    $ (|* gain 0.85)
     $ (|> pan (fast 3 $ rand))
     $ ((|> hpf 60).(|> hpq 1.0).(|> shape 0.5).(|> room 0.1))
-    $ (|> lpf (range 500 3000 rand))
+    $ (|> lpf (range 500 2500 rand))
     $ every' 4 2 (const $ s "~ ~ gtr_single ~ " # gain 1 # n 0)
     $ every' 4 3 (const $ s "~ gtr_single ~ ~" # gain 1 # n (choose [0,1]))
     $ s "~"
