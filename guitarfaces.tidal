@@ -57,8 +57,8 @@ do
       when (<2) (|> gain 0) $
       stack[
       slow (3/2) $
-      every' 6 4 ((|+ n 12).(|* gain 0.9)) $
-      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 1 # pan 0.2
+      every' 6 4 ((|+ n 12).(|* gain 0.95)) $
+      s "SinOscSynthBend" # n "<a5,d5,e5>" # gain 0.9 # pan 0.2
       ,
       ((1/16) <~) $
       every' 4 3 ((|+ n 12).(|* gain 0.95)) $
