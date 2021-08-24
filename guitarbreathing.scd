@@ -13,7 +13,7 @@ SuperDirt.start;
 )
 
 (
-	~dirt.loadSoundFiles("/Users/keitamiyano/Code/CodeMusic/guitarfaces/samples/*");
+	~dirt.loadSoundFiles("/Users/keitamiyano/Code/CodeMusic/guitarbreathing/samples/*");
 
 	~dirt.addModule('SchroederReverb', { |dirtEvent|
 		dirtEvent.sendSynth('SchroederReverb' ++ ~dirt.numChannels,
