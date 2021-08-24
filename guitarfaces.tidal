@@ -4,7 +4,7 @@ resetCyclesTo n = T.changeTempo (sTempoMV tidal) (\t tempo -> tempo {T.atTime = 
 
 setcps (90/60/4)
 
-all $ (|* gain 1.2)
+all $ (|* gain 1.5)
 
 do
   resetCyclesTo (1-0.05)
@@ -87,7 +87,7 @@ do
     $ (|* gain 1.1)
     $ (|> cut 1)
     $ seqP [
-    (0, 66, (
+    (0, 62, (
       when (elem' [9]) ( (ply "4").(# gain (wchoose [(0, 0.7), (1, 0.3)])) )
       $ ply (wchoose [(1, 0.3), (2, 0.2), (4, 0.35), (8, 0.075), (12, 0.075)])
       $ s "AM7*12"
@@ -124,7 +124,7 @@ do
     (0, 58, (
       (|> pan (fast 3 $ rand))
       $ ((|> hpf 60).(|> hpq 1.0).(|> shape 0.5).(|> room 0.1))
-      $ (|> lpf (range 500 2500 rand))
+      $ (|> lpf (range 500 2300 rand))
       $ every' 4 2 (const $ s "~ ~ gtr_single ~ " # gain 1 # n 0)
       $ every' 4 3 (const $ s "~ gtr_single ~ ~" # gain 1 # n (choose [0,1]))
       $ s "~"
@@ -134,7 +134,7 @@ do
     $ when (<15) (|> gain 0)
     $ (|* gain 1.0)
     $ seqP [
-    (0, 58, (
+    (0, 59, (
       ((|> hpf 60).(|> hpq 0.9))
       $ every' 4 0 (|> gain 0)
       $ every' 4 1 (|> gain 0)
