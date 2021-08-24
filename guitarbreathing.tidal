@@ -17,7 +17,7 @@ do
     $ seqP [
     (0, 72, (
       s "superhammondBend*4" # n "<a4,b4>" # pan (slow 5 $ sine)
-      # sustain 0.95 # voice 1 # lpf 1000 # gain 0.6 # room 0.4
+      # sustain 0.95 # voice 1 # lpf 1000 # gain 0.5 # room 0.4
     )),
     (71, 72, (
       s "~ ~ ~ [~ SinOscSynthBend]"
